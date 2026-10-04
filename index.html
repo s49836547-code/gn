@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="A cinematic, peaceful night simulation dedicated to Falkoo Sehroo in Roman Urdu.">
+    <title>Shab Bakhair, Falkoo Sehroo 🌙✨</title>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep-space: #1d040f;
+            --color-moon: #fff1f2;
+            --color-lavender: #fbcfe8;
+            --color-rose: #f43f5e;
+            --color-blush: #fda4af;
+            --color-gold: #fde047;
+            --color-card-bg: #2d0817;
+            --color-card-border: rgba(253, 164, 175, 0.35);
+            --color-text-main: #fff5f7;
+            --color-text-muted: #fecdd3;
+            --font-serif: 'Cormorant Garamond', Georgia, serif;
+            --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            background-color: var(--bg-deep-space);
+            font-family: var(--font-sans);
+            color: var(--color-text-main);
+            position: relative;
+        }
+
+        #nightCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: block;
+        }
+
+        /* Audio Control Button (No Glassmorphism) */
+        .audio-control {
+            position: absolute;
+            top: clamp(16px, 3vh, 28px);
+            right: clamp(16px, 3vw, 28px);
+            z-index: 100;
+            background: #3b0a1e;
+            border: 1px solid var(--color-card-border);
+            color: var(--color-lavender);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.4s var(--ease-cinematic);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .audio-control:hover {
+            background: #500d29;
+            border-color: rgba(251, 207, 232, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(244, 63, 94, 0.35);
+        }
+
+        .scene-container {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(20px, 5vw, 60px);
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 1.2s var(--ease-cinematic), transform 1.2s var(--ease-cinematic), filter 1.2s var(--ease-cinematic);
+            transform: scale(0.97) translateY(12px);
+            filter: blur(6px);
+        }
+
+        .scene-container.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+        }
+
+        /* Solid Warm Pink & Velvet Rose Card (No Glassmorphism) */
+        .card-container {
+            background: var(--color-card-bg);
+            border: 1.5px solid var(--color-card-border);
+            border-radius: clamp(20px, 3.5vw, 32px);
+            padding: clamp(26px, 5vw, 50px);
+            max-width: min(640px, 92vw);
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(10, 1, 5, 0.85), inset 0 1px 0 rgba(255, 241, 242, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(16px, 2.5vh, 26px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subtitle {
+            font-family: var(--font-sans);
+            font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+            text-transform: uppercase;
+            letter-spacing: clamp(2px, 0.5vw, 4px);
+            color: var(--color-blush);
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        h1, h2 {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            color: var(--color-text-main);
+            line-height: 1.28;
+            text-shadow: 0 2px 20px rgba(244, 63, 94, 0.25);
+        }
+
+        h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+        }
+
+        .name-highlight {
+            font-family: var(--font-serif);
+            font-weight: 400;
+            background: linear-gradient(135deg, #ffffff 0%, #ffe4e6 40%, #fda4af 70%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            filter: drop-shadow(0 0 18px rgba(251, 113, 133, 0.45));
+        }
+
+        p.description {
+            font-size: clamp(1rem, 2.2vw, 1.2rem);
+            color: var(--color-text-muted);
+            line-height: 1.65;
+            max-width: 530px;
+            font-weight: 300;
+        }
+
+        /* Buttons with English text and warm rose styling */
+        .btn-cinematic {
+            position: relative;
+            background: linear-gradient(135deg, #881337 0%, #be123c 50%, #e11d48 100%);
+            border: 1px solid rgba(253, 164, 175, 0.5);
+            color: #ffffff;
+            font-family: var(--font-sans);
+            font-size: clamp(0.85rem, 2vw, 0.98rem);
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            padding: clamp(12px, 2vh, 16px) clamp(28px, 4vw, 42px);
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-cinematic);
+            box-shadow: 0 10px 30px rgba(76, 5, 25, 0.6), 0 0 20px rgba(244, 63, 94, 0.25);
+            margin-top: 6px;
+            outline: none;
+        }
+
+        .btn-cinematic::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.8s ease;
+        }
+
+        .btn-cinematic:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 241, 242, 0.9);
+            box-shadow: 0 15px 35px rgba(159, 18, 57, 0.7), 0 0 30px rgba(253, 164, 175, 0.5);
+            background: linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #f43f5e 100%);
+        }
+
+        .btn-cinematic:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-cinematic:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .bedroom-viewport {
+            width: 100%;
+            max-width: 460px;
+            height: min(260px, 34vh);
+            border-radius: 20px;
+            position: relative;
+            margin: 8px 0;
+            overflow: hidden;
+            border: 2px solid rgba(253, 164, 175, 0.25);
+            background: radial-gradient(circle at 70% 30%, #4c0519 0%, #140209 100%);
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.9), 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .window-frame {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 125px;
+            height: 150px;
+            border: 4px solid #380717;
+            border-radius: 60px 60px 8px 8px;
+            background: radial-gradient(circle at 50% 40%, #701a75 0%, #140209 100%);
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.25);
+            overflow: hidden;
+        }
+
+        .window-moon {
+            position: absolute;
+            top: 25px;
+            right: 22px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff1f2;
+            box-shadow: 0 0 18px #fff1f2, 0 0 30px rgba(253, 164, 175, 0.6);
+        }
+
+        .curtain-left, .curtain-right {
+            position: absolute;
+            top: 0;
+            width: 28px;
+            height: 100%;
+            background: rgba(136, 19, 55, 0.9);
+            border-bottom: 2px solid rgba(253, 164, 175, 0.3);
+            animation: curtainSway 6s ease-in-out infinite alternate;
+        }
+
+        .curtain-left { left: 0; border-radius: 0 0 15px 0; }
+        .curtain-right { right: 0; border-radius: 0 0 0 15px; animation-delay: -3s; }
+
+        @keyframes curtainSway {
+            0% { transform: scaleX(1); }
+            100% { transform: scaleX(1.15); }
+        }
+
+        .lamp-glow {
+            position: absolute;
+            bottom: 30px;
+            left: 38px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, rgba(253, 164, 175, 0.75) 0%, rgba(244, 63, 94, 0.25) 50%, transparent 75%);
+            border-radius: 50%;
+            animation: lampFlicker 4s infinite alternate ease-in-out;
+        }
+
+        .lamp-body {
+            position: absolute;
+            bottom: 10px;
+            left: 62px;
+            width: 18px;
+            height: 42px;
+            background: #4c0519;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .lamp-shade {
+            position: absolute;
+            bottom: 42px;
+            left: 52px;
+            width: 38px;
+            height: 24px;
+            background: #ffe4e6;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            box-shadow: 0 0 20px #f43f5e;
+        }
+
+        .bed-silhouette {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #23030d;
+            border-top: 3px solid #5c0920;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .bed-pillow {
+            position: absolute;
+            bottom: 40px;
+            left: 28px;
+            width: 58px;
+            height: 20px;
+            background: #881337;
+            border-radius: 8px;
+        }
+
+        .digital-clock {
+            position: absolute;
+            bottom: 25px;
+            right: 35px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #fbcfe8;
+            text-shadow: 0 0 8px rgba(251, 207, 232, 0.8);
+            letter-spacing: 1px;
+            background: #140209;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #4c0519;
+        }
+
+        @keyframes lampFlicker {
+            0%, 100% { opacity: 0.85; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
+        }
+
+        .letter-container {
+            width: 100%;
+            text-align: left;
+            min-height: 180px;
+            font-size: clamp(0.98rem, 2.2vw, 1.18rem);
+            line-height: 1.75;
+            color: #fff1f2;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: var(--color-blush);
+            vertical-align: middle;
+            margin-left: 2px;
+            animation: cursorBlink 0.8s infinite;
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .star-hint {
+            font-size: 0.85rem;
+            color: var(--color-blush);
+            opacity: 0.9;
+            letter-spacing: 1px;
+            margin-top: -4px;
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; text-shadow: 0 0 10px rgba(253, 164, 175, 0.6); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scene-container, .btn-cinematic, .curtain-left, .curtain-right, .lamp-glow {
+                animation: none !important;
+                transition: opacity 0.5s ease !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas Sky Layer -->
+    <canvas id="nightCanvas"></canvas>
+
+    <!-- Audio Control Button (English text) -->
+    <button class="audio-control" id="audioBtn" aria-label="Toggle Sound">
+        <span id="audioIcon">✨</span>
+        <span id="audioText">SOUND: OFF</span>
+    </button>
+
+    <!-- ==================== SCENE 1: SUNSET ==================== -->
+    <section class="scene-container active" id="scene1" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">HASEEN SHĀM</span>
+            <h1>Din aaste aaste dhal raha hai…</h1>
+            <p class="description">Aao thoda thehar kar iss shām ko Falkoo Sehroo ke liye aur bhi khubsoorat banate hain.</p>
+            <button class="btn-cinematic" id="btnScene1" onclick="nextScene(2)">BEGIN THE NIGHT ✨</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 2: TWILIGHT ==================== -->
+    <section class="scene-container" id="scene2" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">DHALTI SHĀM AUR SHAFAK</span>
+            <h2>Duniya ab khāmosh hone lagi hai…</h2>
+            <p class="description">Aur raat ki meethi thandak aaste aaste phel rahi hai. 🌙</p>
+            <button class="btn-cinematic" id="btnScene2" onclick="nextScene(3)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 3: NIGHT SKY ==================== -->
+    <section class="scene-container" id="scene3" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">ROSHAN SITĀREY</span>
+            <h2>Aasman ki taraf dekhein…</h2>
+            <p class="description">Kuch raatein bohot pyari, pur-sukoon aur dil ke qareeb hoti hain.</p>
+            <button class="btn-cinematic" id="btnScene3" onclick="nextScene(4)">EXPLORE THE STARS ✨</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 4: INTERACTIVE STARS ==================== -->
+    <section class="scene-container" id="scene4" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">KHĀS MULAQĀT</span>
+            <h2>Aasman ko chhoo kar dekhein ✨</h2>
+            <p class="description" id="starInstructions">Aasman mein jagmagate sitarom par tap karein aur unki roshni dekhein.</p>
+            <div class="star-hint" id="starProgressText">Sitarom ko roshan karein (0/4)</div>
+            <button class="btn-cinematic" id="btnScene4" style="display: none;" onclick="nextScene(5)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 5: MOONLIGHT ==================== -->
+    <section class="scene-container" id="scene5" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">CHĀND KI CHĀNDNI</span>
+            <h2>Issi pyare chānd ke tale…</h2>
+            <p class="description">Koi bohot khās hai jiske liye aaj ki raat bohot khoobsurat aur pur-sukoon honi chahiye.</p>
+            <h1 class="name-highlight">Falkoo Sehroo 🌙</h1>
+            <button class="btn-cinematic" id="btnScene5" onclick="nextScene(6)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 6: PEACEFUL BEDROOM ==================== -->
+    <section class="scene-container" id="scene6" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">PUR-SUKOON KAMRA</span>
+            <h2>Din khatam ho gaya.</h2>
+            
+            <div class="bedroom-viewport">
+                <div class="window-frame">
+                    <div class="window-moon"></div>
+                </div>
+                <div class="curtain-left"></div>
+                <div class="curtain-right"></div>
+                <div class="lamp-glow"></div>
+                <div class="lamp-shade"></div>
+                <div class="lamp-body"></div>
+                <div class="bed-silhouette"></div>
+                <div class="bed-pillow"></div>
+                <div class="digital-clock" id="liveClock">11:11 PM</div>
+            </div>
+
+            <p class="description">Ab tamaam thakan ko bhool kar aaram karne ka waqt hai.</p>
+            <button class="btn-cinematic" id="btnScene6" onclick="nextScene(7)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 7: PERSONAL LETTER ==================== -->
+    <section class="scene-container" id="scene7" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle" style="align-self: flex-start;">EK DIL SE KHĀS PEGHĀM</span>
+            <h2 style="align-self: flex-start;">Sonaay Se Pehle… 🌙</h2>
+            
+            <div class="letter-container" id="letterText">
+                <!-- Typewriter text populates here -->
+            </div>
+
+            <button class="btn-cinematic" id="btnScene7" style="opacity: 0; pointer-events: none;" onclick="nextScene(8)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 8: SHOOTING STAR ==================== -->
+    <section class="scene-container" id="scene8" aria-live="polite">
+        <div class="card-container">
+            <span class="subtitle">AASMANI KWAHISH</span>
+            <h2>Aasman se ek toot'ta hua sitara guzar raha hai…</h2>
+            <p class="description" id="wishDescription">Jab aapka dil chahey, neeche diye button par click karke ek pyari si dua ya kwahish maang lein.</p>
+            <button class="btn-cinematic" id="btnMakeWish" onclick="makeWish()">MAKE A WISH 🌠</button>
+            <button class="btn-cinematic" id="btnScene8" style="display: none;" onclick="nextScene(9)">CONTINUE →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SCENE 9: FINAL GOOD NIGHT ==================== -->
+    <section class="scene-container" id="scene9" aria-live="polite">
+        <div class="card-container" id="finalCard">
+            <span class="subtitle">MEETHE KHWĀB</span>
+            <h1 style="font-size: clamp(2.5rem, 6vw, 4.5rem);">SHAB BAKHAIR 🌙</h1>
+            <h2 class="name-highlight" style="font-size: clamp(2rem, 5vw, 3.5rem);">Falkoo Sehroo ✨</h2>
+            <p class="description" style="font-size: clamp(1.1rem, 2.5vw, 1.35rem); color: #fff1f2;">
+                Sukoon ki neend so jao, pyare pyare khwab dekho, aur kal ek haseen subah aapka intezar kare.
+            </p>
+            <button class="btn-cinematic" id="btnFinalNight" onclick="darkenFinalScreen()">GOOD NIGHT 🌙</button>
+            <button class="btn-cinematic" id="btnReplay" style="display: none; background: #6b0c2a;" onclick="restartNight()">REPLAY THE NIGHT ↻</button>
+        </div>
+    </section>
+
+    <script>
+        /* ===================================================================
+           1. WEB AUDIO API SYNTHESIS ENGINE (Soft Gentle Chimes)
+           =================================================================== */
+        let audioCtx = null;
+        let isAudioEnabled = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playChime(freq = 523.25, type = 'sine', duration = 1.8) {
+            if (!isAudioEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                // Silently ignore audio context block
+            }
+        }
+
+        // Toggle Audio Button with English Text
+        const audioBtn = document.getElementById('audioBtn');
+        const audioIcon = document.getElementById('audioIcon');
+        const audioText = document.getElementById('audioText');
+
+        audioBtn.addEventListener('click', () => {
+            initAudio();
+            isAudioEnabled = !isAudioEnabled;
+            if (isAudioEnabled) {
+                audioText.innerText = 'SOUND: ON';
+                audioIcon.innerText = '🔔';
+                playChime(659.25, 'sine', 2.0);
+            } else {
+                audioText.innerText = 'SOUND: OFF';
+                audioIcon.innerText = '✨';
+            }
+        });
+
+        /* ===================================================================
+           2. CANVAS BACKGROUND SKY & ATMOSPHERIC ENGINE (Pink / Crimson Palette)
+           =================================================================== */
+        const canvas = document.getElementById('nightCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initStars();
+        });
+
+        let currentScene = 1;
+
+        // Sunset, Twilight & Deep Crimson/Pink Gradients per Scene
+        const skyGradients = {
+            1: { top: [159, 18, 57], mid: [225, 29, 72], bot: [251, 113, 133] },   // Sunset Rose Pink
+            2: { top: [88, 28, 135], mid: [159, 18, 57], bot: [244, 63, 94] },     // Twilight Crimson
+            3: { top: [32, 5, 17], mid: [88, 15, 38], bot: [159, 18, 57] },        // Deep Rose Sky
+            4: { top: [23, 4, 12], mid: [76, 5, 25], bot: [136, 19, 55] },         // Star Field Sky
+            5: { top: [32, 5, 17], mid: [112, 26, 117], bot: [190, 24, 93] },      // Moonlight Aura
+            6: { top: [23, 4, 12], mid: [56, 7, 21], bot: [76, 5, 25] },           // Bedroom Velvet Night
+            7: { top: [32, 5, 17], mid: [88, 15, 38], bot: [136, 19, 55] },        // Letter Scene
+            8: { top: [18, 3, 10], mid: [56, 7, 21], bot: [112, 26, 117] },        // Wish / Shooting Star
+            9: { top: [12, 2, 7], mid: [45, 8, 22], bot: [88, 15, 38] }            // Final Good Night Sky
+        };
+
+        let curTop = [...skyGradients[1].top];
+        let curMid = [...skyGradients[1].mid];
+        let curBot = [...skyGradients[1].bot];
+
+        // Star Field Object Model
+        let stars = [];
+        const starCount = Math.min(Math.floor((width * height) / 3200), 220);
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height * 0.88,
+                    radius: Math.random() * 1.6 + 0.6,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.015 + 0.005,
+                    brightening: Math.random() > 0.5,
+                    interactiveGlow: 0
+                });
+            }
+        }
+        initStars();
+
+        // Soft Floating Particles
+        let fireflies = [];
+        for (let i = 0; i < 28; i++) {
+            fireflies.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.2 + 1,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.6 + 0.2
+            });
+        }
+
+        let ripples = [];
+
+        let shootingStar = {
+            active: false,
+            x: 0,
+            y: 0,
+            length: 0,
+            speed: 0,
+            dx: 0,
+            dy: 0,
+            alpha: 0,
+            trail: []
+        };
+
+        function triggerShootingStar() {
+            shootingStar.x = Math.random() * (width * 0.6) + width * 0.2;
+            shootingStar.y = Math.random() * (height * 0.3);
+            shootingStar.length = 130;
+            shootingStar.speed = 18;
+            shootingStar.dx = -12;
+            shootingStar.dy = 8;
+            shootingStar.alpha = 1.0;
+            shootingStar.trail = [];
+            shootingStar.active = true;
+
+            playChime(880.0, 'sine', 1.5);
+        }
+
+        /* ===================================================================
+           3. MAIN RENDER LOOP
+           =================================================================== */
+        function lerp(start, end, amt) {
+            return start + (end - start) * amt;
+        }
+
+        let moonScale = 1.0;
+        let finalDarknessAlpha = 0;
+
+        function render() {
+            const targetSky = skyGradients[currentScene] || skyGradients[9];
+            for (let i = 0; i < 3; i++) {
+                curTop[i] = lerp(curTop[i], targetSky.top[i], 0.02);
+                curMid[i] = lerp(curMid[i], targetSky.mid[i], 0.02);
+                curBot[i] = lerp(curBot[i], targetSky.bot[i], 0.02);
+            }
+
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+            grad.addColorStop(0, `rgb(${Math.round(curTop[0])}, ${Math.round(curTop[1])}, ${Math.round(curTop[2])})`);
+            grad.addColorStop(0.5, `rgb(${Math.round(curMid[0])}, ${Math.round(curMid[1])}, ${Math.round(curMid[2])})`);
+            grad.addColorStop(1, `rgb(${Math.round(curBot[0])}, ${Math.round(curBot[1])}, ${Math.round(curBot[2])})`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+
+            // Sun Transition
+            if (currentScene <= 2) {
+                const sunY = currentScene === 1 ? height * 0.65 : height * 0.85;
+                const sunAlpha = currentScene === 1 ? 0.85 : 0.15;
+                const sunGrad = ctx.createRadialGradient(width * 0.5, sunY, 10, width * 0.5, sunY, 190);
+                sunGrad.addColorStop(0, `rgba(255, 241, 242, ${sunAlpha})`);
+                sunGrad.addColorStop(0.3, `rgba(251, 113, 133, ${sunAlpha * 0.7})`);
+                sunGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = sunGrad;
+                ctx.beginPath();
+                ctx.arc(width * 0.5, sunY, 190, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw Stars
+            const globalStarAlphaMultiplier = currentScene === 1 ? 0.25 : currentScene === 2 ? 0.65 : 1.0;
+
+            stars.forEach(s => {
+                if (s.brightening) {
+                    s.alpha += s.speed;
+                    if (s.alpha >= 1) s.brightening = false;
+                } else {
+                    s.alpha -= s.speed;
+                    if (s.alpha <= 0.2) s.brightening = true;
+                }
+
+                if (s.interactiveGlow > 0) {
+                    s.interactiveGlow -= 0.015;
+                }
+
+                const currentAlpha = Math.min(1, (s.alpha + s.interactiveGlow) * globalStarAlphaMultiplier);
+
+                ctx.fillStyle = `rgba(255, 245, 247, ${currentAlpha})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius + s.interactiveGlow * 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (s.interactiveGlow > 0.2) {
+                    ctx.strokeStyle = `rgba(253, 164, 175, ${s.interactiveGlow * 0.6})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius * 6, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+
+            // Draw Moon
+            if (currentScene >= 2) {
+                const targetMoonScale = (currentScene === 5 || currentScene === 9) ? 1.35 : 1.0;
+                moonScale = lerp(moonScale, targetMoonScale, 0.03);
+
+                const moonX = width > 768 ? width * 0.75 : width * 0.5;
+                const moonY = height * 0.22;
+                const baseRadius = Math.min(width, height) * 0.08 * moonScale;
+
+                const moonAura = ctx.createRadialGradient(moonX, moonY, baseRadius * 0.8, moonX, moonY, baseRadius * 2.6);
+                moonAura.addColorStop(0, 'rgba(255, 241, 242, 0.35)');
+                moonAura.addColorStop(0.5, 'rgba(253, 164, 175, 0.15)');
+                moonAura.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = moonAura;
+                ctx.beginPath();
+                ctx.arc(moonX, moonY, baseRadius * 2.6, 0, Math.PI * 2);
+                ctx.fill();
+
+                const moonGrad = ctx.createRadialGradient(moonX - baseRadius * 0.3, moonY - baseRadius * 0.3, baseRadius * 0.1, moonX, moonY, baseRadius);
+                moonGrad.addColorStop(0, '#ffffff');
+                moonGrad.addColorStop(0.75, '#fff1f2');
+                moonGrad.addColorStop(1, '#ffe4e6');
+                ctx.fillStyle = moonGrad;
+                ctx.beginPath();
+                ctx.arc(moonX, moonY, baseRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.08)';
+                ctx.beginPath();
+                ctx.arc(moonX - baseRadius * 0.2, moonY - baseRadius * 0.1, baseRadius * 0.22, 0, Math.PI * 2);
+                ctx.arc(moonX + baseRadius * 0.25, moonY + baseRadius * 0.3, baseRadius * 0.18, 0, Math.PI * 2);
+                ctx.arc(moonX - baseRadius * 0.35, moonY + baseRadius * 0.25, baseRadius * 0.15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw Fireflies
+            if (currentScene >= 3) {
+                fireflies.forEach(f => {
+                    f.x += f.vx;
+                    f.y += f.vy;
+
+                    if (f.x < 0) f.x = width;
+                    if (f.x > width) f.x = 0;
+                    if (f.y < 0) f.y = height;
+                    if (f.y > height) f.y = 0;
+
+                    ctx.fillStyle = `rgba(253, 164, 175, ${f.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // Ripples
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const r = ripples[i];
+                r.radius += 2.5;
+                r.alpha -= 0.02;
+
+                ctx.strokeStyle = `rgba(253, 164, 175, ${r.alpha})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                if (r.alpha <= 0) ripples.splice(i, 1);
+            }
+
+            // Shooting Star
+            if (shootingStar.active) {
+                shootingStar.x += shootingStar.dx;
+                shootingStar.y += shootingStar.dy;
+                shootingStar.alpha -= 0.012;
+
+                shootingStar.trail.push({ x: shootingStar.x, y: shootingStar.y });
+                if (shootingStar.trail.length > 25) shootingStar.trail.shift();
+
+                ctx.strokeStyle = `rgba(255, 241, 242, ${shootingStar.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                if (shootingStar.trail.length > 0) {
+                    ctx.moveTo(shootingStar.trail[0].x, shootingStar.trail[0].y);
+                    for (let p of shootingStar.trail) {
+                        ctx.lineTo(p.x, p.y);
+                    }
+                }
+                ctx.stroke();
+
+                ctx.fillStyle = `rgba(253, 164, 175, ${shootingStar.alpha})`;
+                ctx.beginPath();
+                ctx.arc(shootingStar.x, shootingStar.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (shootingStar.alpha <= 0) shootingStar.active = false;
+            }
+
+            // Final Darkness Overlay
+            if (finalDarknessAlpha > 0) {
+                ctx.fillStyle = `rgba(12, 2, 7, ${finalDarknessAlpha})`;
+                ctx.fillRect(0, 0, width, height);
+            }
+
+            requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render);
+
+        /* ===================================================================
+           4. SCENE CONTROLLER & INTERACTION
+           =================================================================== */
+        function nextScene(targetSceneNum) {
+            const currentSceneEl = document.getElementById(`scene${currentScene}`);
+            const nextSceneEl = document.getElementById(`scene${targetSceneNum}`);
+
+            if (currentSceneEl) {
+                currentSceneEl.classList.remove('active');
+            }
+
+            playChime(440 + targetSceneNum * 40, 'sine', 1.2);
+
+            setTimeout(() => {
+                currentScene = targetSceneNum;
+                if (nextSceneEl) {
+                    nextSceneEl.classList.add('active');
+                }
+
+                if (currentScene === 7) {
+                    startTypewriter();
+                } else if (currentScene === 8) {
+                    setTimeout(triggerShootingStar, 1200);
+                }
+            }, 600);
+        }
+
+        /* ===================================================================
+           5. INTERACTIVE STAR SYSTEM (SCENE 4)
+           =================================================================== */
+        let starsClickedCount = 0;
+        const requiredStarClicks = 4;
+
+        window.addEventListener('pointerdown', (e) => {
+            ripples.push({ x: e.clientX, y: e.clientY, radius: 5, alpha: 0.8 });
+
+            if (currentScene === 4) {
+                stars.forEach(s => {
+                    const dist = Math.hypot(s.x - e.clientX, s.y - e.clientY);
+                    if (dist < 120) {
+                        s.interactiveGlow = 1.0;
+                    }
+                });
+
+                starsClickedCount++;
+                playChime(523.25 + starsClickedCount * 60, 'sine', 1.0);
+
+                const progressText = document.getElementById('starProgressText');
+                if (progressText && starsClickedCount <= requiredStarClicks) {
+                    progressText.innerText = `Sitarom ko roshan karein (${starsClickedCount}/${requiredStarClicks})`;
+                }
+
+                if (starsClickedCount >= requiredStarClicks) {
+                    document.getElementById('starInstructions').innerText = "Har khāmosh raat mein ek pyari si roshni chhipi hoti hai. ✨";
+                    document.getElementById('starProgressText').innerText = "Aasman poori tarah roshan ho gaya ✨";
+                    document.getElementById('btnScene4').style.display = 'inline-block';
+                }
+            }
+        });
+
+        /* ===================================================================
+           6. TYPEWRITER ENGINE (SCENE 7)
+           =================================================================== */
+        const letterMessage = `Pyari Falkoo Sehroo,\n\nJaise hi yeh raat charo taraf meetha sukoon phelati hai, meri bas itni si dua hai ke aapka dil aur dimaag bilkul pur-sukoon ho jaye.\n\nAaj ke poore din ki saari thakan aur pareshaniyon ko ab yahin chhor do. Aapne aaj ka din bohot achhe se guzara hai.\n\nAb aaram se aankhein band kar lo, bohot pyare pyare khwab dekho, aur kal subah ek bohot hi pyari aur meethi muskaan ke saath uthna. 🌙`;
+
+        let letterTyped = false;
+
+        function startTypewriter() {
+            if (letterTyped) return;
+            letterTyped = true;
+
+            const letterContainer = document.getElementById('letterText');
+            letterContainer.innerHTML = '<span id="typedContent"></span><span class="typewriter-cursor"></span>';
+            
+            const typedContent = document.getElementById('typedContent');
+            let index = 0;
+
+            function typeNextChar() {
+                if (index < letterMessage.length) {
+                    const char = letterMessage.charAt(index);
+                    if (char === '\n') {
+                        typedContent.innerHTML += '<br>';
+                    } else {
+                        typedContent.innerHTML += char;
+                    }
+                    index++;
+
+                    if (index % 5 === 0) {
+                        playChime(783.99, 'sine', 0.2);
+                    }
+
+                    const delay = char === '.' || char === '?' || char === '!' ? 300 : char === ',' ? 150 : 35;
+                    setTimeout(typeNextChar, delay);
+                } else {
+                    const cursor = document.querySelector('.typewriter-cursor');
+                    if (cursor) cursor.style.display = 'none';
+
+                    const btnScene7 = document.getElementById('btnScene7');
+                    btnScene7.style.opacity = '1';
+                    btnScene7.style.pointerEvents = 'auto';
+                }
+            }
+
+            setTimeout(typeNextChar, 500);
+        }
+
+        /* ===================================================================
+           7. SHOOTING STAR & WISH SYSTEM (SCENE 8)
+           =================================================================== */
+        function makeWish() {
+            triggerShootingStar();
+            playChime(1046.50, 'sine', 2.5);
+
+            stars.forEach(s => s.interactiveGlow = 1.0);
+
+            const wishDesc = document.getElementById('wishDescription');
+            wishDesc.innerText = "Kuch duayein aur kwahishein bas aapke aur inn khubsoorat sitarom ke darmayan hi achhi lagti hain. ✨";
+
+            document.getElementById('btnMakeWish').style.display = 'none';
+            document.getElementById('btnScene8').style.display = 'inline-block';
+        }
+
+        /* ===================================================================
+           8. FINAL GOOD NIGHT & REPLAY SYSTEM (SCENE 9)
+           =================================================================== */
+        function darkenFinalScreen() {
+            finalDarknessAlpha = 0.65;
+            playChime(392.00, 'sine', 3.0);
+
+            document.getElementById('btnFinalNight').style.display = 'none';
+            document.getElementById('btnReplay').style.display = 'inline-block';
+        }
+
+        function restartNight() {
+            finalDarknessAlpha = 0;
+            starsClickedCount = 0;
+            letterTyped = false;
+
+            document.getElementById('btnMakeWish').style.display = 'inline-block';
+            document.getElementById('btnScene8').style.display = 'none';
+            document.getElementById('btnFinalNight').style.display = 'inline-block';
+            document.getElementById('btnReplay').style.display = 'none';
+            document.getElementById('btnScene4').style.display = 'none';
+            document.getElementById('starInstructions').innerText = "Aasman mein jagmagate sitarom par tap karein aur unki roshni dekhein.";
+            document.getElementById('starProgressText').innerText = "Sitarom ko roshan karein (0/4)";
+
+            nextScene(1);
+        }
+
+        function updateBedroomClock() {
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                clockEl.innerText = `${hours}:${minutes} ${ampm}`;
+            }
+        }
+        setInterval(updateBedroomClock, 1000);
+        updateBedroomClock();
+    </script>
+</body>
+</html>
